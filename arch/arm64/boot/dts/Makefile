@@ -29,6 +29,7 @@ subdir-y += socionext
 subdir-y += sprd
 subdir-y += st
 subdir-y += synaptics
+subdir-y += system-electronics
 subdir-y += tesla
 subdir-y += ti
 subdir-y += toshiba
