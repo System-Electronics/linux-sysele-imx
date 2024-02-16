@@ -262,7 +262,7 @@ static int usb_conn_probe(struct platform_device *pdev)
 
 	/* Perform initial detection */
 	info->initial_detection = true;
-	usb_conn_queue_dwork(info, 0);
+	usb_conn_queue_dwork(info, msecs_to_jiffies(200));
 
 	return 0;
 
