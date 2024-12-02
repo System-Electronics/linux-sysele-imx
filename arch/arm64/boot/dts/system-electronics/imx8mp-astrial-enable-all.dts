@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright 2019 NXP
+ * Copyright 2024 Koan Software
+ */
+
+/dts-v1/;
+
+#include "imx8mp-astrial-base.dtsi"
+
+&flexcan2 {
+    status = "okay";
+};
+
+&usdhc1 {
+    status = "okay";
+};
+
+&ecspi2 {
+    status = "okay";
+};
+
+&uart3 {
+    status = "okay";
+};
