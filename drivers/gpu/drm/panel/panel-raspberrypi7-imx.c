@@ -366,14 +366,12 @@ static const struct drm_panel_funcs rpi_panel_imx_funcs = {
 	.get_modes = rpi_panel_imx_get_modes,
 };
 
-static int rpi_panel_imx_remove(struct mipi_dsi_device *dsi)
+static void rpi_panel_imx_remove(struct mipi_dsi_device *dsi)
 {
 	struct rpi_panel_imx *ts = mipi_dsi_get_drvdata(dsi);
 
 	mipi_dsi_detach(ts->dsi);
 	drm_panel_remove(&ts->base);
-
-	return 0;
 }
 
 static void rpi_panel_imx_shutdown(struct mipi_dsi_device *dsi)
