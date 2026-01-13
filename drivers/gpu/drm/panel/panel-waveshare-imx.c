@@ -508,14 +508,12 @@ static int ws_panel_imx_probe(struct mipi_dsi_device *dsi)
 	return ret;
 }
 
-static int ws_panel_imx_remove(struct mipi_dsi_device *dsi)
+static void ws_panel_imx_remove(struct mipi_dsi_device *dsi)
 {
 	struct ws_panel_imx *ts = mipi_dsi_get_drvdata(dsi);
 
 	mipi_dsi_detach(ts->dsi);
 	drm_panel_remove(&ts->base);
-
-	return 0;
 }
 
 static void ws_panel_imx_shutdown(struct mipi_dsi_device *dsi)
