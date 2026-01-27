@@ -5,7 +5,7 @@
  */
 
 /dts-v1/;
-
+#include <dt-bindings/phy/phy-imx8-pcie.h>
 #include <dt-bindings/usb/pd.h>
 #include "../freescale/imx8mp.dtsi"
 
@@ -489,7 +489,7 @@
 	status = "okay";
 };
 
-&pcie_phy{
+&pcie_phy {
 	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
 	clocks = <&pcie0_refclk>;
 	clock-names = "ref";
