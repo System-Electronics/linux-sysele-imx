@@ -491,7 +491,7 @@
 
 &pcie_phy {
 	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_OUTPUT>;
-	clocks = <&pcie0_refclk>;
+	clocks = <&hsio_blk_ctrl>;
 	clock-names = "ref";
 	status = "okay";
 };
@@ -812,7 +812,7 @@
 	pinctrl_pcie: pciegrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_I2C4_SCL__PCIE_CLKREQ_B	0x60   /* open drain, pull up */ /* PCIE_CLKREQ_N */
-			MX8MP_IOMUXC_GPIO1_IO15__GPIO1_IO15	0x41   /* PCIE_RST_N */
+			MX8MP_IOMUXC_GPIO1_IO15__GPIO1_IO15	0x40   /* PCIE_RST_N */
 			MX8MP_IOMUXC_I2C4_SDA__GPIO5_IO21	0x1c4  /* PCIE_WAKE_N */
 		>;
 	};
