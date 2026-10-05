@@ -528,8 +528,30 @@ static void goodix_free_irq(struct goodix_ts_data *ts)
 	devm_free_irq(&ts->client->dev, ts->client->irq, ts);
 }
 
+#define GOODIX_POLL_INTERVAL_MS	16	/* ~60 Hz when no INT line is wired */
+
+/*
+ * ASTRIAL: poll callback used when the controller has no usable hardware
+ * interrupt (the touch INT is not routed to the SoC on this carrier). Reads the
+ * same coordinate report the IRQ handler would, then clears the buffer-status.
+ */
+static void goodix_ts_poll(struct input_dev *input)
+{
+	struct goodix_ts_data *ts = input_get_drvdata(input);
+
+	goodix_process_events(ts);
+	goodix_i2c_write_u8(ts->client, GOODIX_READ_COOR_ADDR, 0);
+}
+
 static int goodix_request_irq(struct goodix_ts_data *ts)
 {
+	/*
+	 * ASTRIAL: no hardware INT wired -> nothing to request, the input
+	 * device is driven by polling (set up in goodix_configure_dev()).
+	 */
+	if (ts->client->irq <= 0)
+		return 0;
+
 	return devm_request_threaded_irq(&ts->client->dev, ts->client->irq,
 					 NULL, goodix_ts_irq_handler,
 					 ts->irq_flags, ts->client->name, ts);
@@ -1229,6 +1251,25 @@ retry_read_config:
 		return error;
 	}
 
+	/*
+	 * ASTRIAL: if no hardware interrupt is available, drive the input
+	 * device by polling the touch coordinates over I2C. Must be set up
+	 * before input_register_device().
+	 */
+	if (ts->client->irq <= 0) {
+		input_set_drvdata(ts->input_dev, ts);
+		error = input_setup_polling(ts->input_dev, goodix_ts_poll);
+		if (error) {
+			dev_err(&ts->client->dev,
+				"failed to set up polling: %d\n", error);
+			return error;
+		}
+		input_set_poll_interval(ts->input_dev, GOODIX_POLL_INTERVAL_MS);
+		dev_info(&ts->client->dev,
+			 "no INT wired, polling touch every %u ms\n",
+			 GOODIX_POLL_INTERVAL_MS);
+	}
+
 	error = input_register_device(ts->input_dev);
 	if (error) {
 		dev_err(&ts->client->dev,
@@ -1435,7 +1476,8 @@ static int goodix_suspend(struct device *dev)
 
 	/* We need gpio pins to suspend/resume */
 	if (ts->irq_pin_access_method == IRQ_PIN_ACCESS_NONE) {
-		disable_irq(client->irq);
+		if (client->irq > 0)	/* ASTRIAL: polling mode, no IRQ */
+			disable_irq(client->irq);
 		return 0;
 	}
 
@@ -1479,7 +1521,8 @@ static int goodix_resume(struct device *dev)
 	int error;
 
 	if (ts->irq_pin_access_method == IRQ_PIN_ACCESS_NONE) {
-		enable_irq(client->irq);
+		if (client->irq > 0)	/* ASTRIAL: polling mode, no IRQ */
+			enable_irq(client->irq);
 		return 0;
 	}
 

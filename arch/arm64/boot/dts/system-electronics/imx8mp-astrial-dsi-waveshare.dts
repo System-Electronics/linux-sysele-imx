@@ -30,3 +30,21 @@
 		status = "okay";
 	};
 };
+
+/*
+ * Capacitive touch (Goodix GT9271) on the Waveshare panel control I2C (i2c2,
+ * same bus as the panel MCU). The touch INT is NOT routed to the SoC on this
+ * carrier -> no "interrupts" here: client->irq is 0 and the (patched) goodix
+ * driver falls back to polling the coordinates over I2C (see goodix.c,
+ * GOODIX_POLL_INTERVAL_MS). No reset either (the controller already answers at
+ * 0x14). The touch is rotated 90 deg vs the display -> swap X/Y and invert X so
+ * raw maps to the 1280x800 landscape panel (same mapping as the imx95 Astrial).
+ */
+&i2c2 {
+	touchscreen@14 {
+		compatible = "goodix,gt911";
+		reg = <0x14>;
+		touchscreen-swapped-x-y;
+		touchscreen-inverted-x;
+	};
+};
