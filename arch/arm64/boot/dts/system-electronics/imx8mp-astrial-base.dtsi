@@ -567,16 +567,16 @@
 &usb3_phy1 {
 	fsl,phy-tx-preemp-amp-tune = <3>;
 	fsl,phy-tx-vref-tune = <0xb>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb3_1 {
-	status = "disabled";
+	status = "okay";
 };
 
 &usb_dwc3_1 {
 	dr_mode = "host";
-	status = "disabled";
+	status = "okay";
 };
 
 &usdhc1 {
